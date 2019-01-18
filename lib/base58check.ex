@@ -42,7 +42,6 @@ defmodule Base58Check do
   end
   def encode58check(prefix, data) do
     prefix = if is_integer(prefix), do: :binary.encode_unsigned(prefix), else: prefix
-    IO.inspect prefix
     data = if is_integer(data), do: :binary.encode_unsigned(data), else: data
     encode58check(prefix, data)
   end
@@ -60,7 +59,12 @@ defmodule Base58Check do
   end
 
   defp generate_checksum(versioned_data) do
-    <<checksum::binary-size(4), _rest::binary-size(28)>> = versioned_data |> :erlsha2.sha256() |> :erlsha2.sha256()
+    <<checksum::binary-size(4), _rest::binary-size(28)>> = versioned_data |> sha256() |> sha256()
     checksum
+  end
+
+  defp sha256(data) do
+    :sha256
+    |> :crypto.hash(data)
   end
 end
